@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="ESORIA CodeFest, ruang berkompetisi untuk pembuat website, penjelajah keamanan, dan tim pengembang produk.">
+  <meta name="theme-color" content="#f4efe5">
+  <title>ESORIA CodeFest</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Lewati navigasi</a>
+  <header class="header">
+    <a href="/" class="brand" data-link aria-label="ESORIA CodeFest, beranda"><img src="/assets/logo_esoria.webp" alt="" width="43" height="43"><span>ESORIA<small>CODEFEST</small></span></a>
+    <button id="menu-toggle" class="menu-toggle" aria-expanded="false" aria-controls="nav" type="button">Menu ☰</button>
+    <nav id="nav" aria-label="Navigasi utama"></nav>
+  </header>
+  <main id="main" tabindex="-1"><div class="loading" role="status">Menyiapkan arena ESORIA…</div></main>
+  <footer class="footer"><a href="/" data-link class="footer-brand">ESORIA <span>CODEFEST</span></a><span>Build with purpose. Compete with character.</span><span id="release-label">Edisi UTS</span></footer>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="modal"><div id="modal-content"></div></dialog>
+  <dialog id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-message">
+    <div class="confirm-kicker">ESORIA / KONFIRMASI</div>
+    <h2 id="confirm-title"></h2>
+    <p id="confirm-message"></p>
+    <div class="confirm-actions">
+      <button type="button" class="btn outline" id="confirm-no">Kembali</button>
+      <button type="button" class="btn green" id="confirm-yes">Lanjutkan</button>
+    </div>
+  </dialog>
+  <noscript><p>Aktifkan JavaScript untuk menggunakan formulir dan akun ESORIA.</p></noscript>
+</body>
+</html>

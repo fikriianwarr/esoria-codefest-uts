@@ -1,0 +1,37 @@
+name: esoria-uts
+services:
+  web:
+    image: esoria-uts:local
+    build:
+      context: .
+      args:
+        RELEASE_SHA: ${RELEASE_SHA:-local}
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${APP_PORT:-8080}:3000"
+    environment:
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?Jalankan npm run setup terlebih dahulu}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Jalankan npm run setup terlebih dahulu}
+      ADMIN_SYNC_ON_START: "true"
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      APP_NAME: ${APP_NAME:-ESORIA CodeFest}
+    volumes:
+      - esoria-data:/app/data
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+    cpus: 1.0
+    pids_limit: 100
+    stop_grace_period: 15s
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
+volumes:
+  esoria-data:
+    name: esoria_uts_data

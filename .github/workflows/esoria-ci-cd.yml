@@ -1,0 +1,127 @@
+name: ESORIA UTS - CI and CD
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: esoria-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    name: Test application and container
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24.22.1'
+          cache: npm
+      - name: Check required CD settings when deployment is enabled
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.ENABLE_CD == 'true'
+        env:
+          ENABLE_CD: ${{ vars.ENABLE_CD }}
+          ESORIA_ADMIN_EMAIL: ${{ secrets.ESORIA_ADMIN_EMAIL }}
+          ESORIA_ADMIN_PASSWORD: ${{ secrets.ESORIA_ADMIN_PASSWORD }}
+          ESORIA_APP_PORT: ${{ vars.ESORIA_APP_PORT }}
+          ESORIA_BIND_ADDRESS: ${{ vars.ESORIA_BIND_ADDRESS }}
+          ESORIA_COOKIE_SECURE: ${{ vars.ESORIA_COOKIE_SECURE }}
+        run: node scripts/check-cd-config.mjs
+      - name: Install from lockfile
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Syntax and local assets
+        run: npm run check
+      - name: API, authorization, business rules and persistence
+        run: npm test
+      - name: Build and exercise actual container
+        env:
+          CI_IMAGE: esoria-uts:ci
+        run: bash scripts/verify-container.sh
+      - name: Save tested image
+        if: github.event_name != 'pull_request' && vars.ENABLE_CD == 'true'
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          docker save esoria-uts:ci | gzip > "$RUNNER_TEMP/esoria-image.tar.gz"
+      - uses: actions/upload-artifact@v4
+        if: github.event_name != 'pull_request' && vars.ENABLE_CD == 'true'
+        with:
+          name: tested-container
+          path: ${{ runner.temp }}/esoria-image.tar.gz
+          retention-days: 2
+  publish:
+    name: Publish tested image to GHCR
+    needs: verify
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.ENABLE_CD == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.push.outputs.image }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: tested-container
+          path: ${{ runner.temp }}/image
+      - name: Push exact image that passed tests
+        id: push
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_ACTOR: ${{ github.actor }}
+          REPOSITORY: ${{ github.repository }}
+          COMMIT_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          export DOCKER_CONFIG="$RUNNER_TEMP/docker-auth"
+          trap 'rm -rf "$DOCKER_CONFIG"' EXIT
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io -u "$GH_ACTOR" --password-stdin
+          gunzip -c "$RUNNER_TEMP/image/esoria-image.tar.gz" | docker load
+          image="ghcr.io/${REPOSITORY,,}/esoria-uts"
+          docker tag esoria-uts:ci "$image:sha-$COMMIT_SHA"
+          docker push "$image:sha-$COMMIT_SHA"
+          digest=$(docker inspect --format '{{index .RepoDigests 0}}' "$image:sha-$COMMIT_SHA")
+          printf 'image=%s\n' "$digest" >> "$GITHUB_OUTPUT"
+          printf '### Tested container\n`%s`\n' "$digest" >> "$GITHUB_STEP_SUMMARY"
+  deploy:
+    name: Deploy on group machine
+    needs: publish
+    if: vars.ENABLE_CD == 'true' && github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, Linux, X64, esoria-uts]
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24.22.1'
+      - name: Deploy, check health, match commit and rollback on failure
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_ACTOR: ${{ github.actor }}
+          ESORIA_IMAGE: ${{ needs.publish.outputs.image }}
+          ESORIA_EXPECTED_SHA: ${{ github.sha }}
+          ESORIA_ADMIN_EMAIL: ${{ secrets.ESORIA_ADMIN_EMAIL }}
+          ESORIA_ADMIN_PASSWORD: ${{ secrets.ESORIA_ADMIN_PASSWORD }}
+          ESORIA_APP_PORT: ${{ vars.ESORIA_APP_PORT }}
+          ESORIA_BIND_ADDRESS: ${{ vars.ESORIA_BIND_ADDRESS }}
+          ESORIA_COOKIE_SECURE: ${{ vars.ESORIA_COOKIE_SECURE }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          export DOCKER_CONFIG="$RUNNER_TEMP/docker-auth-esoria"
+          trap 'rm -rf "$DOCKER_CONFIG"' EXIT
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io -u "$GH_ACTOR" --password-stdin
+          bash scripts/deploy.sh
+          printf '### Deployment completed\nCommit `%s` is running and healthy.\n' "$ESORIA_EXPECTED_SHA" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,18 @@
+{
+  "name": "esoria-codefest-uts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24.22.1 <25" },
+  "scripts": {
+    "start": "node app/server.mjs",
+    "dev": "node scripts/dev.mjs",
+    "setup": "node scripts/setup.mjs",
+    "start:docker": "node scripts/start-local.mjs",
+    "check:docker": "node scripts/check-runtime.mjs --save",
+    "check": "node scripts/check.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "verify:container": "bash scripts/verify-container.sh",
+    "verify:container:windows": "node scripts/verify-container-local.mjs"
+  }
+}

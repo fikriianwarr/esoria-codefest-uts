@@ -1,0 +1,19 @@
+.git
+.env
+.env.*
+node_modules
+data
+.preview-data
+referensi
+docs
+evidence
+*.zip
+*.log
+test-results
+.openai
+README.md
+*.cmd
+# Kedua file Compose wajib masuk build context untuk tahap verify di Dockerfile.
+# Jangan abaikan compose.yaml atau compose.deploy.yaml.
+
+# Workflow CI/CD disertakan pada stage verifikasi agar test rubrik berjalan di image.
