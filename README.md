@@ -44,9 +44,6 @@ ESORIA CodeFest adalah aplikasi web pengelolaan kompetisi informatika dengan ant
 | **Peserta** | Registrasi akun, masuk, melihat kategori, mendaftar, melihat status/tiket, mengelola profil, dan mengirim tautan karya |
 | **Admin** | Meninjau pendaftaran, mengelola kategori, memantau statistik dan aktivitas |
 | **Operasional** | Melihat status layanan dan informasi rilis aplikasi |
-
-**Kategori awal:** Website Programming (individu), Cybersecurity Mini CTF (individu), dan Full Stack Development (tim 2–4 orang). Informasi pembayaran pada edisi UTS diperlakukan sebagai **simulasi administrasi**, bukan transaksi pembayaran nyata.
-
 ---
 
 ## Jalankan aplikasi
