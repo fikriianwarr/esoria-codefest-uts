@@ -12,3 +12,6 @@ test-results/
 *.log
 .DS_Store
 Thumbs.db
+
+# Isolated fixtures for the cross-platform deploy regression tests.
+.esoria-deploy-test-*/

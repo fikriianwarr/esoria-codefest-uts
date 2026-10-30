@@ -1,314 +1,194 @@
-<div align="center">
-  <a href="https://github.com/fikriianwarr/esoria-codefest-uts">
-    <img src="app/public/assets/logo_esoria.webp" alt="Logo ESORIA CodeFest" width="100" />
-  </a>
+# Koreksi error terakhir pada log 30 Oktober 2026
 
-  # ESORIA CODEFEST
+Log Windows menunjukkan **92/92 tes lulus**, audit container `PASS`, dan endpoint `/api/health` mengembalikan database `ok`. Kesalahan terakhir hanya pada penyalinan perintah manual: pemecahan `Sort-Object` menjadi `Sort` dan `Object`, serta backslash `\` tambahan di belakang SHA GitHub. Ini bukan kegagalan Docker ataupun aplikasi.
 
-  **BUILD. SECURE. COMPETE.**
+**Paling sederhana:** setelah website berjalan, jalankan `\.\PERIKSA-BUKTI.cmd`. Untuk seluruh pemeriksaan dari awal, gunakan `\.\PERIKSA-SEMUA.cmd`. Jangan ketik ulang paragraf instruksi atau contoh perintah salah. Bila menjalankan pemeriksaan release secara manual untuk image dengan `commit=local`, gunakan `node scripts/check-runtime.mjs --expected-release local`.
 
-  *Dari ide menjadi karya. Dari pengujian menjadi rilis yang terverifikasi.*
+Pemeriksaan `--expected-sha` tetap harus gagal untuk image lokal yang bukan berasal dari commit pipeline; jangan gunakan klaim GitHub Actions untuk mengganti bukti Docker lokal. Panduan lengkap: `docs/PERINTAH_WINDOWS_FINAL_SIAP_SALIN.md`.
 
-  **UTS Pengembangan dan Operasi · IF-B Pagi · T.A. 2026/2027**
+## Perintah UTS satu klik (Windows)
 
-  `Node.js 24` &nbsp;·&nbsp; `Docker` &nbsp;·&nbsp; `SQLite` &nbsp;·&nbsp; `GitHub Actions` &nbsp;·&nbsp; `GHCR`
+Untuk seluruh urutan perintah PowerShell tanpa salah ketik, buka folder proyek hasil ekstraksi dan jalankan `.\PERIKSA-SEMUA.cmd` (Docker Desktop harus aktif). Skrip ini sekarang menjalankan `mulai.cmd` tanpa jeda tombol otomatis, memeriksa port dan semua tes, serta tidak membandingkan commit lokal dengan SHA GitHub secara palsu. Perintah satu per satu yang dikoreksi tersedia di [docs/PERINTAH_WINDOWS_FINAL_SIAP_SALIN.md](docs/PERINTAH_WINDOWS_FINAL_SIAP_SALIN.md). Jangan mengetik `Sort` lalu `Object` secara terpisah; gunakan `.\lihat-audit.ps1`.
 
-  [**Mulai menjalankan**](#jalankan-aplikasi) &nbsp;|&nbsp;
-  [**Alur CI/CD**](#alur-ci-dan-cd) &nbsp;|&nbsp;
-  [**Bukti pengujian**](#bukti-pengujian) &nbsp;|&nbsp;
-  [**Dokumentasi**](#dokumentasi)
-</div>
+## Perbaikan build Docker dari ZIP GitHub (30 Oktober 2026)
 
----
+Sumber utama paket ini adalah ZIP GitHub `esoria-codefest-uts-main.zip`. Kode aplikasi dan workflow sumber GitHub dipertahankan; revisi kompatibilitas Windows sebelumnya digabungkan. Pada versi sebelumnya pengujian nomor 87–89 gagal **hanya di Docker build** dengan `ENOENT /build/PERIKSA-BUKTI.cmd`, `/build/PERIKSA-SEMUA.cmd`, dan `/build/buka-bukti-github.ps1`.
 
-> [!IMPORTANT]
-> **Ruang lingkup:** repository ini berisi **ESORIA CodeFest edisi UTS** untuk praktik container dan CI/CD. Aplikasi menggunakan Node.js + SQLite dan **bukan salinan fitur lengkap** website ESORIA berbasis Firebase yang dikembangkan sebelumnya.
+Perbaikan: `.dockerignore` sekarang **mengikutkan `.cmd`**, dan `Dockerfile` menyalin `*.cmd`, `*.ps1`, `Dockerfile`, serta `.dockerignore` ke tahap `verify` **sebelum** menjalankan `npm test`. File-file verifikasi itu **tidak ikut ke image runtime**. Pengujian regresi `tests/docker-build-context.test.mjs` menjaga syarat ini. Jumlah tes sudah bertambah dan seluruhnya tetap dijalankan.
 
-## Sekilas proyek
+Untuk bukti bahwa Docker benar-benar menjalankan tes dari source baru (bukan image lama), gunakan `docker compose build --no-cache`, lalu `docker compose up -d --wait` hanya jika proses build selesai sukses. **Jangan** pakai `docker compose down -v`, jangan menghapus volume `esoria_uts_data`, dan jangan menyertakan `.env` pribadi dalam ZIP / GitHub. Jika volume lama ada tetapi `.env` hilang, `mulai.cmd` akan mencoba memulihkannya dari container ESORIA yang terverifikasi.
 
-ESORIA CodeFest adalah aplikasi web pengelolaan kompetisi informatika dengan antarmuka editorial, sistem akun, pendaftaran, pengelolaan kategori, dan dashboard administrasi. Edisi UTS mengutamakan proses **build → test → publish → deploy** yang dapat diperiksa melalui Docker dan GitHub Actions.
+Dalam PowerShell, jangan mengetik judul, kalimat panduan, atau URL mentah sebagai perintah. Gunakan `PERIKSA-BUKTI.cmd` (pemeriksaan runtime tanpa build) atau `PERIKSA-SEMUA.cmd` (memulai serta menguji ulang), dan `buka-bukti-github.ps1` untuk membuka tautan. Image `commit=local` **tidak** dapat dinyatakan sama dengan SHA GitHub.
 
-| Lapisan | Teknologi dan penerapan |
-| :-- | :-- |
-| **Antarmuka** | HTML5, CSS3, JavaScript native; responsif |
-| **Server & API** | Node.js `24.22.1`, ES Modules, API HTTP |
-| **Database** | SQLite melalui `node:sqlite`, mode WAL |
-| **Container** | Dockerfile multi-stage, Docker Compose v2 |
-| **Penyimpanan** | Named volume `esoria_uts_data` |
-| **Otomatisasi** | GitHub Actions: `verify` → `publish` → `deploy` |
-| **Registry** | GitHub Container Registry (GHCR) |
-| **Mesin deployment** | Self-hosted runner Ubuntu WSL2 + Docker |
+# ESORIA CodeFest UTS — Paket Bersih
 
-### Fitur aplikasi
+Paket ini merupakan **edisi ESORIA CodeFest untuk UTS Pengembangan dan Operasi** yang menggunakan aplikasi Node.js + SQLite di dalam container Docker. Halaman ESORIA, API, autentikasi peserta/admin, pendaftaran, kategori, dan alur pengelolaan tetap ada. Edisi UTS ini **bukan** seluruh fitur website Firebase awal; fitur yang tidak dimigrasikan tidak boleh dianggap tersedia.
 
-| Peran | Cakupan fitur |
-| :-- | :-- |
-| **Peserta** | Registrasi akun, masuk, melihat kategori, mendaftar, melihat status/tiket, mengelola profil, dan mengirim tautan karya |
-| **Admin** | Meninjau pendaftaran, mengelola kategori, memantau statistik dan aktivitas |
-| **Operasional** | Melihat status layanan dan informasi rilis aplikasi |
+## Satu perintah tanpa menyalin teks penjelasan atau URL
 
-**Kategori awal:** Website Programming (individu), Cybersecurity Mini CTF (individu), dan Full Stack Development (tim 2–4 orang). Informasi pembayaran pada edisi UTS diperlakukan sebagai **simulasi administrasi**, bukan transaksi pembayaran nyata.
-
----
-
-## Jalankan aplikasi
-
-### Persyaratan
-
-- **Windows** dengan Docker Desktop dan mode **Linux containers** aktif.
-- **Docker Compose v2** tersedia melalui Docker Desktop.
-- **Node.js `>=24.22.1 <25`** terpasang dan dapat dipanggil dari terminal.
-- Source diekstrak ke folder biasa, bukan dijalankan langsung dari dalam ZIP.
-
-### Cara tercepat (Windows)
-
-**1.** Jalankan Docker Desktop dan pastikan Docker Engine siap.
-
-**2.** Buka folder source, lalu klik dua kali file **`mulai.cmd`**.
-
-**3.** Buka alamat yang muncul di terminal setelah container berstatus sehat.
-
-```text
-Port utama    : http://localhost:8080
-Port cadangan : http://localhost:8088 (contoh hasil pengujian)
-Port internal : 3000/tcp
-```
-
-`mulai.cmd` menjalankan setup bila diperlukan, memilih port yang tersedia, membangun image, menjalankan container, dan menampilkan alamat aplikasi. **Port yang digunakan bisa berbeda**, sehingga ikuti alamat yang benar-benar dicetak oleh launcher.
-
-<details>
-<summary><strong>Alternatif: menjalankan melalui PowerShell</strong></summary>
-
-Dari root proyek:
+**Untuk memeriksa website yang sudah berjalan**, buka PowerShell pada folder hasil ekstraksi dan jalankan **hanya**:
 
 ```powershell
-npm run setup
-docker compose up -d --build --wait
-docker compose ps
-docker compose port web 3000
+.\PERIKSA-BUKTI.cmd
 ```
 
-Cara terminal ini tidak menjalankan pemilihan port cadangan dari launcher. Jika port bentrok, sesuaikan `APP_PORT` di `.env` privat terlebih dahulu.
-
-</details>
-
-### Konfigurasi admin
-
-Pada setup awal, sistem membuat `.env` dengan kata sandi admin acak. Email default pada contoh setup adalah **`admin@esoria.test`**. Simpan kata sandi yang muncul pada setup pertama secara pribadi.
-
-> [!CAUTION]
-> **Jangan unggah `.env`** atau menyalin password, token runner, dan session cookie ke repository maupun screenshot. Jika database lama tetap digunakan, pertahankan `.env` yang sesuai agar kredensial admin tidak berubah tanpa disengaja.
-
----
-
-## Alur CI dan CD
-
-**Alur implementasi yang mudah dibaca tanpa diagram eksternal:**
-
-| Tahap | Proses | Hasil |
-| :-- | :-- | :-- |
-| **01 · SOURCE** | Commit / pull request pada GitHub | Source masuk ke workflow |
-| **02 · VERIFY** | Pemeriksaan source, 81 automated tests, build dan smoke test Docker | Image yang lulus pengujian |
-| **03 · PUBLISH** | Upload image teruji ke GHCR saat CD diaktifkan | Referensi image berbasis digest |
-| **04 · DEPLOY** | Self-hosted runner mengambil image dan menjalankan Docker Compose | Container aplikasi terbaru |
-| **05 · VALIDATE** | Periksa HTTP, database, status sehat, dan SHA rilis | Deployment terverifikasi; kegagalan ditangani skrip pemulihan |
-
-```text
-GITHUB REPOSITORY
-       |
-       v
-[ 01 SOURCE ] --> [ 02 VERIFY ]
-                         |
-                         | main + ENABLE_CD=true
-                         v
-                  [ 03 PUBLISH / GHCR ]
-                         |
-                         v
-                  [ 04 DEPLOY / WSL2 ]
-                         |
-                         v
-                  [ 05 HEALTH + SHA CHECK ]
-                         |
-                 SUCCESS / FAILURE HANDLING
-```
-
-**Berkas workflow:** [`.github/workflows/esoria-ci-cd.yml`](.github/workflows/esoria-ci-cd.yml)
-
-- `verify` berjalan untuk `pull_request`, `push` ke `main`, dan `workflow_dispatch`.
-- `publish` dan `deploy` berjalan sesuai kondisi pada workflow, termasuk `ENABLE_CD=true` dan branch `main`.
-- `publish` menerbitkan image **yang sudah lolos tes**, bukan membangun image baru tanpa verifikasi.
-- `deploy` menggunakan runner `self-hosted`, `Linux`, `X64`, `esoria-uts` dan memvalidasi rilis setelah pemasangan.
-- Mekanisme pemulihan tersedia pada skrip deployment; **keberhasilan rollback dalam kegagalan produksi nyata tidak diklaim**.
-
-### Secrets dan variables
-
-| Jenis | Nama | Keterangan |
-| :-- | :-- | :-- |
-| Secret | `ESORIA_ADMIN_EMAIL` | Email admin untuk deployment |
-| Secret | `ESORIA_ADMIN_PASSWORD` | Password admin, tidak boleh dipublikasikan |
-| Variable | `ENABLE_CD` | `true` untuk mengizinkan publish/deploy pada kondisi workflow yang sesuai |
-| Variable | `ESORIA_APP_PORT` | Port host tujuan; `8088` pada pengujian yang terdokumentasi |
-| Variable | `ESORIA_BIND_ADDRESS` | `127.0.0.1` untuk akses dari komputer sendiri |
-| Variable | `ESORIA_COOKIE_SECURE` | `false` pada HTTP lokal; sesuaikan bila menggunakan HTTPS |
-
-Autentikasi ke GHCR dalam workflow memakai **`GITHUB_TOKEN` yang disediakan GitHub Actions**. Panduan konfigurasi lebih lanjut: [`docs/CI_CD.md`](docs/CI_CD.md).
-
-> [!WARNING]
-> **Sebelum mengubah README di branch `main`:** perubahan dokumentasi tetap merupakan `push` dan dapat memicu workflow. Jika Anda tidak ingin proses CD berjalan, ubah repository variable `ENABLE_CD` menjadi `false` sebelum commit. Runner self-hosted yang mempunyai akses Docker juga sebaiknya tidak digunakan untuk pekerjaan dari sumber yang tidak dipercaya.
-
----
-
-## Bukti pengujian
-
-Dokumentasi berikut merujuk pada **GitHub Actions Run #2 tanggal 27 Oktober 2026**, bukan status real-time dari seluruh run berikutnya.
-
-| Job | Hasil pada Run #2 | Durasi job |
-| :-- | :--: | --: |
-| Test application and container — `verify` | **SUCCESS** | 1 menit 13 detik |
-| Publish tested image to GHCR — `publish` | **SUCCESS** | 29 detik |
-| Deploy on group machine — `deploy` | **SUCCESS** | 1 menit 21 detik |
-| **Workflow keseluruhan** | **SUCCESS** | **9 menit 48 detik** |
-
-**Hasil tambahan yang sudah terdokumentasi:**
-
-- **81 dari 81 automated tests lulus**, tanpa kegagalan pada pengujian yang dicatat.
-- Container `esoria-uts-web-1` berstatus **healthy** setelah deployment.
-- `/api/health` mengembalikan `status: ok` dan `database: ok`.
-- `/api/release` menunjukkan versi `1.0.0` serta commit yang sesuai dengan pipeline.
-- Data SQLite berada pada named volume `esoria_uts_data`.
-- Audit container lokal menguji restart/recreate dan persistensi pada **volume uji terpisah**.
-
-**Tautan verifikasi:**
-
-- [**GitHub Actions — Run #2 (Success)**](https://github.com/fikriianwarr/esoria-codefest-uts/actions/runs/40434638852)
-- [**Workflow CI/CD**](.github/workflows/esoria-ci-cd.yml)
-- [**Commit terverifikasi**](https://github.com/fikriianwarr/esoria-codefest-uts/commit/5fe69f90675504bcfc599efebd9fd5de04e5bc98)
-
-<details>
-<summary><strong>Identitas image GHCR yang berhasil dipublikasikan</strong></summary>
-
-```text
-ghcr.io/fikriianwarr/esoria-codefest-uts/esoria-uts@sha256:98fc41ff98001539068478aadddc9bdb5661e5e03125fbfa66bf425199d8bfd9
-```
-
-</details>
-
-> [!NOTE]
-> Run #2 berhasil melalui **pemicu manual (`workflow_dispatch`)**. Trigger `push` telah dikonfigurasi, tetapi demonstrasi perubahan aplikasi melalui push baru tidak diklaim sudah diuji secara terpisah. Repository masih **Private** pada screenshot yang didokumentasikan; penguji memerlukan akses untuk membuka kode dan bukti GitHub.
-
-### Perintah verifikasi lokal
-
-Dari PowerShell pada root proyek:
+**Untuk menjalankan seluruh proses UTS dari awal** (termasuk launcher, `npm test`, dan audit Docker), jalankan **hanya**:
 
 ```powershell
+.\PERIKSA-SEMUA.cmd
+```
+
+Ketika `mulai.cmd` menampilkan `Press any key to continue`, tekan satu tombol. Pada akhir skrip pemeriksaan, tekan tombol lagi untuk menutup. Skrip menampilkan status keberhasilan atau kesalahan yang sebenarnya, **tidak memalsukan perbandingan SHA GitHub dengan `local`**.
+
+**Untuk membuka tautan GitHub dengan benar**, tanpa mengetik URL sebagai perintah:
+
+```powershell
+.\buka-bukti-github.ps1 -BukaBrowser
+```
+
+Teks `Alamat repository`, `Workflow YAML`, dan `Bukti Run` adalah keterangan, **bukan perintah PowerShell**. Jangan menyalin keterangan ke terminal. Hasil `Sort-Object` sudah ditangani oleh skrip; jangan memisahkannya menjadi `Sort` dan `Object`.
+
+## Audit seluruh perintah PowerShell (direvisi)
+
+Untuk menjalankan seluruh daftar verifikasi UTS sekaligus, buka Windows PowerShell pada folder hasil ekstraksi dan jalankan:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\verifikasi-semua.ps1
+```
+
+Skrip ini memeriksa lokasi, alat, startup, container, port, 92 tes, bukti JSON, HTTP, dan identitas rilis, kemudian mencetak tautan bukti GitHub. **Skrip `powershell -File` berjalan di proses tersendiri**: bila ingin menjalankan `curl.exe` secara manual setelahnya pada jendela PowerShell asal, ketik `.\siapkan-demo.ps1` untuk mengatur kembali `$PORT` dan `$BASE` pada sesi aktif. Helper `.\lihat-audit.ps1` membaca audit terakhir sehingga perintah `Sort-Object` tidak perlu disalin. Untuk memeriksa audit JSON, endpoint, dan identitas image aktif tanpa mengulang Docker build, ketik `.\cek-bukti.ps1`. Versi perintah manual, contoh output yang benar, serta penjelasan SHA GitHub versus `local` terdapat pada [`docs/VERIFIKASI_POWERSHELL.md`](docs/VERIFIKASI_POWERSHELL.md). Pada image lokal, gunakan `node scripts/check-runtime.mjs --expected-release local`. Perintah `--expected-sha <commit>` khusus image yang benar-benar dibangun/dideploy dari commit tersebut dan **harus menolak SHA yang berbeda**.
+
+## Memulai dengan satu file
+
+1. Ekstrak ZIP ke folder biasa (bukan menjalankan file langsung dari ZIP).
+2. Jalankan **Docker Desktop** dengan Linux containers dan pastikan **Node.js 24.22.1 atau versi 24 lebih baru** terpasang.
+3. Klik dua kali **`mulai.cmd`**. Launcher membuat `.env` hanya jika belum tersedia, memilih port yang bebas, menjalankan `docker compose up -d --build --wait`, dan membuka website di browser.
+4. Jika port 8080 sudah terpakai, port cadangan (misalnya 8088) dipilih dan disimpan ke `.env`. Lihat alamat yang dicetak pada terminal.
+5. Admin awal: `admin@esoria.test`. Kata sandi dibuat acak pada pemakaian pertama dan disimpan dalam `.env`. **Jika memakai database lama, salin `.env` lama dari folder proyek sebelumnya sebelum menjalankan `mulai.cmd`** agar kredensial tetap sama. Jika `.env` hilang tetapi volume `esoria_uts_data` masih ada, launcher mencoba **memulihkan kredensial yang sama dari container `esoria-uts-web-1`**, setelah memeriksa label Compose dan volume yang terpasang. Tidak ada reset kata sandi pada jalur otomatis. Jika container lama tidak tersedia, launcher berhenti aman dan menampilkan instruksi pemulihan di bawah. Kata sandi baru **tidak dicetak di log** untuk mencegah kebocoran; lihat `ADMIN_PASSWORD` di `.env` secara privat.
+
+**`mulai.cmd` adalah satu-satunya launcher website Windows**; `verifikasi-semua.ps1`, `siapkan-demo.ps1`, `lihat-audit.ps1`, dan `cek-bukti.ps1` adalah utilitas verifikasi PowerShell, bukan launcher lain. Skrip `.mjs` dan `.sh` dalam `scripts/` wajib dipertahankan karena diperlukan untuk build, pengujian, pemeriksaan kontainer, atau CI/CD. Jangan menghapus `Dockerfile`, `compose*.yaml`, `.github/`, `package*.json`, `app/`, atau `tests/`.
+
+## Pemulihan aman jika `.env` hilang tetapi volume lama masih ada
+
+Kondisi yang pernah terjadi pada Windows: `Test-Path .env` menghasilkan `False` dan Docker masih menyimpan volume `esoria_uts_data`. **Jangan hapus volume, jangan jalankan `docker compose down -v`, dan jangan membuat `.env` dengan password sembarang secara diam-diam.**
+
+1. **Cara pertama (otomatis):** jalankan `mulai.cmd` dari ZIP versi ini. Apabila container `esoria-uts-web-1` lama masih dapat ditemukan dan terbukti memiliki label project `esoria-uts`, service `web`, dan volume `esoria_uts_data` di `/app/data`, launcher menyelamatkan `ADMIN_EMAIL`, `ADMIN_PASSWORD`, dan port dari konfigurasi container itu dan menyimpannya di `.env` lokal **tanpa menampilkan kata sandi**, lalu meneruskan startup. Password admin lama dipertahankan.
+2. **Jika container lama telah dihapus:** periksa kembali folder ZIP/ekstraksi sebelumnya dan **salin `.env` lama secara privat** ke folder terbaru. Tidak perlu mengganti password atau menjalankan perintah pemulihan.
+3. **Jika `.env` asli benar-benar hilang dan container lama tidak tersedia:** jalankan `npm run recover:admin:local`, lalu `./mulai.cmd` dari PowerShell (di Windows gunakan `.\mulai.cmd`). Opsi pemulihan ini **harus Anda jalankan secara sadar**: ia membuat password admin baru dalam `.env`. Saat server dimulai, `ADMIN_SYNC_ON_START=true` menyelaraskan akun admin yang ada dan mencabut sesi admin sebelumnya; peserta, pendaftaran, acara, dan named volume tetap ada.
+
+Perintah PowerShell untuk langkah 3:
+
+```powershell
+npm run recover:admin:local
+.\mulai.cmd
+.\siapkan-demo.ps1
+npm run check:docker
+node scripts/check-runtime.mjs --expected-release local
+```
+
+Perintah pemulihan tidak diperlukan bila `mulai.cmd` sudah berhasil memulihkan `.env`. Jangan mengunggah `.env`, nilai `ADMIN_PASSWORD`, atau hasil `docker inspect` (berisi environment rahasia). Reset admin lokal bukan prosedur CD/produksi dan tidak mendeploy GitHub.
+
+## Pengujian kode pada Windows dan Linux
+
+Jalankan `npm test` dari PowerShell atau terminal proyek. **Windows menggunakan Docker Desktop dalam mode Linux containers** untuk sembilan pengujian skrip Bash `deploy.sh`/`rollback.sh`, sedangkan pengujian aplikasi lainnya lain berjalan langsung di Windows. Cara ini mencegah konflik antara `bash.exe` milik WSL/Git Bash dan path Windows serta error `EBUSY` saat membersihkan folder sementara.
+
+Docker menjalankan pengujian Bash menggunakan image `node:24.22.1-bookworm-slim` dalam **container sementara** tanpa jaringan, tanpa akses Docker socket, tanpa port host, dan tanpa volume proyek. Source hanya dipasang *read-only* lalu file pengujian yang diperlukan disalin ke `/tmp` di dalam container. Docker yang dipanggil oleh skrip deployment **disimulasikan**, bukan Docker host. Tidak ada deployment produksi ataupun penghapusan data utama. Docker Desktop wajib berjalan di Windows untuk `npm test`; **Git Bash/WSL tidak diperlukan**.
+
+Pada Linux (termasuk tahap `verify` Dockerfile), seluruh seluruh pengujian berjalan langsung dengan Node dan Bash, tanpa ketergantungan pada daemon Docker dalam tahap pengujian itu.
+
+Perintah di Windows:
+
+```powershell
+node --version
+docker info --format "{{.ServerVersion}}"
 npm run check
 npm test
-npm run verify:container:windows
-docker compose ps
 ```
 
-Untuk memeriksa endpoint, sesuaikan port dengan hasil launcher:
+Saat selesai, hasil `npm test` menampilkan jumlah lulus Windows native dan Linux terisolasi. Pengujian suite ini menggunakan Docker tiruan; untuk memvalidasi Docker sesungguhnya lanjutkan dengan `npm run verify:container:windows`. Pipeline GitHub menggunakan runner Linux sebagaimana dijelaskan dalam `docs/CI_CD.md`.
+
+## Membaca bukti tanpa error perintah terpotong
+
+Jika Anda sudah menjalankan `npm run verify:container:windows` dan hanya ingin menampilkan bukti sekaligus memeriksa endpoint, **jangan ulangi build** dan jangan ketik `Sort` lalu `Object` terpisah. Jalankan langsung:
 
 ```powershell
-curl.exe -fsS http://localhost:8088/api/health
-curl.exe -fsS http://localhost:8088/api/release
+.\cek-bukti.ps1
 ```
 
-Berkas audit lokal dari skrip verifikasi dapat ditemukan di `evidence/local/` setelah pemeriksaan berhasil. Jangan menafsirkan hasil uji lokal sebagai pengganti status GitHub Actions.
+Untuk hanya membaca JSON terakhir, gunakan `.\lihat-audit.ps1`. Perintah `Sort-Object` harus satu kata utuh bila diketik manual.
 
----
+## Jika BASE kosong atau pembacaan audit gagal
 
-## Penyimpanan data dan keamanan
+Tiap jendela PowerShell punya variabel berbeda. Setelah membuka jendela baru, atau setelah memanggil `powershell -File .\verifikasi-semua.ps1`, jalankan perintah berikut di jendela PowerShell yang ingin dipakai untuk `curl.exe`:
 
-```text
-Browser -> http://localhost:<port>
-                   |
-                   v
-         Docker container :3000
-                   |
-       +-----------+-----------+
-       |           |           |
-    Frontend     HTTP API    Security
-   app/public   app/server   app/security
-                   |
-                   v
-               SQLite WAL
-                   |
-                   v
-          Volume esoria_uts_data
-          /app/data/esoria.sqlite
+```powershell
+.\siapkan-demo.ps1
+curl.exe -fsS "$($BASE)/api/health"
+curl.exe -fsS "$($BASE)/api/release"
+.\lihat-audit.ps1
+node scripts/check-runtime.mjs --expected-release local
 ```
 
-Keamanan container yang dikonfigurasi mencakup proses **non-root**, root filesystem **read-only**, `tmpfs /tmp`, `cap_drop: [ALL]`, `no-new-privileges`, dan pembatasan CPU/memori. Healthcheck memastikan aplikasi memberi respons sesuai pemeriksaan runtime.
+`siapkan-demo.ps1` tidak mengubah database atau merestart container. `lihat-audit.ps1` membaca JSON audit terbaru dan memverifikasi status `PASS`. Identitas rilis dari `mulai.cmd` adalah `local`; jangan menganggapnya SHA GitHub.
 
-Hentikan container tanpa menghapus volume database:
+## Perintah setelah website menyala
+
+Jalankan PowerShell dari folder proyek:
+
+```powershell
+docker compose ps
+docker compose logs --tail 60 web
+npm run check:docker
+npm run verify:container:windows
+```
+
+`npm run verify:container:windows` menguji image, API, healthcheck, serta ketahanan data saat container di-restart dan dibuat ulang memakai **volume uji terpisah**. Berkas bukti lokal dibuat di `evidence/local/` saat pemeriksaan berhasil. Perintah tersebut tidak menghapus volume utama.
+
+Jika hanya ingin menghentikan container tanpa menghapus data:
 
 ```powershell
 docker compose down
 ```
 
-> [!CAUTION]
-> **Jangan menjalankan `docker compose down -v`** untuk penghentian biasa karena opsi `-v` dapat menghapus volume database. Keberadaan volume tidak dengan sendirinya membuktikan setiap data historis peserta masih lengkap; pembuktian tersebut memerlukan pemeriksaan isi database sebelum dan sesudah perubahan.
+### Database dan keamanan
 
----
+Volume database utama adalah **`esoria_uts_data`**. File `.env` disimpan di komputer Anda, tidak dimasukkan ke ZIP dan tidak boleh di-commit. Jangan menjalankan `docker compose down -v` kecuali benar-benar ingin menghapus database (akun peserta, pendaftaran, aktivitas, dan pengaturan). Reset volume **tidak** mengubah `.env`; pada startup admin dibentuk/disinkronkan dari kredensial tersebut.
 
-## Struktur repository
+**Jika sandi admin pernah dibagikan ke chat, screenshot, atau log**, rotasi `ADMIN_PASSWORD` secara privat pada `.env` kemudian jalankan ulang `mulai.cmd` agar database menyinkronkan kredensial baru. Jika login admin belum sesuai setelah startup, periksa `ADMIN_EMAIL` dan `ADMIN_PASSWORD` pada `.env` milik sendiri lalu jalankan `mulai.cmd` kembali. Container akan menyinkronkan akun admin dengan `.env`. Jangan mengunggah nilai rahasia ini.
+
+## CI/CD untuk rubrik UTS
+
+`Dockerfile` memakai tahap `verify` sebelum tahap runtime. `compose.yaml` untuk lokal dan `compose.deploy.yaml` untuk deployment menggunakan volume yang sama. Pipeline `.github/workflows/esoria-ci-cd.yml` melaksanakan:
+
+1. **verify:** pemeriksaan source,  pengujian Node dan build/uji container sesungguhnya.
+2. **publish:** setelah CD diaktifkan, unggah image yang telah lulus tes ke GitHub Container Registry.
+3. **deploy:** pasang image terverifikasi pada self-hosted runner Linux dan cek health/commit dengan rollback saat gagal.
+
+Job `publish` dan `deploy` sengaja bersyarat; belum bisa dianggap berhasil sebelum ada repository, secrets, variables, dan runner yang disiapkan oleh kelompok. Petunjuk teknis lengkap: [`docs/CI_CD.md`](docs/CI_CD.md). Pemetaan rubrik: [`docs/ANALISIS_RUBRIK.md`](docs/ANALISIS_RUBRIK.md). Teknologi serta asal materi: [`docs/SUMBER.md`](docs/SUMBER.md).
+
+## Struktur paket minimal
 
 ```text
-esoria-codefest-uts/
-├── .github/
-│   └── workflows/
-│       └── esoria-ci-cd.yml       # Verify, publish, deploy
-├── app/
-│   ├── public/                  # UI, CSS, JS, logo
-│   ├── server.mjs               # Server + REST API
-│   ├── database.mjs             # SQLite
-│   └── security.mjs             # Auth dan kontrol keamanan
-├── scripts/                    # Setup, start, verify, deploy, rollback
-├── tests/                      # Automated test suite
-├── docs/
-│   ├── ANALISIS_RUBRIK.md
-│   ├── CI_CD.md
-│   └── SUMBER.md
-├── Dockerfile
-├── compose.yaml
-├── compose.deploy.yaml
-├── mulai.cmd                    # Launcher Windows
-├── .env.example                 # Contoh, tanpa password aktual
-├── package.json
-├── package-lock.json
-└── README.md
+mulai.cmd                  Launcher website Windows
+verifikasi-semua.ps1      Audit otomatis lengkap
+siapkan-demo.ps1          Mengatur $PORT dan $BASE pada sesi aktif
+lihat-audit.ps1           Menampilkan bukti audit terbaru
+cek-bukti.ps1             Memeriksa audit, HTTP dan identitas runtime tanpa variabel manual
+PERIKSA-BUKTI.cmd          Satu perintah untuk memeriksa bukti tanpa copy-paste
+PERIKSA-SEMUA.cmd          Satu perintah untuk seluruh tahapan UTS
+buka-bukti-github.ps1      Menampilkan atau membuka URL sebagai tautan, bukan perintah
+app/                       Website, API dan SQLite
+scripts/                   Verifikasi, deployment, rollback dan startup
+tests/                     Pengujian otomatis
+Dockerfile                 Build image multi-stage
+compose.yaml               Menjalankan container lokal
+compose.deploy.yaml        Pemasangan image CI/CD
+.github/workflows/         Pipeline GitHub Actions
+.env.example               Contoh konfigurasi tanpa kata sandi asli
+package.json, package-lock.json
+docs/                      Hanya panduan teknis CI/CD, pemetaan rubrik, dan sumber
 ```
 
-## Dokumentasi
+Direktori **referensi Firebase lama**, **log hasil uji historis**, berkas laporan, dan launcher Windows tambahan **tidak disertakan** karena tidak dibutuhkan aplikasi UTS ini. Ini tidak menghapus source asli pada perangkat Anda atau mengubah volume Docker yang sudah ada.
 
-| Berkas | Fungsi |
-| :-- | :-- |
-| [`docs/CI_CD.md`](docs/CI_CD.md) | Konfigurasi workflow, runner, variabel, dan penanganan kegagalan |
-| [`docs/ANALISIS_RUBRIK.md`](docs/ANALISIS_RUBRIK.md) | Pemetaan kebutuhan tugas UTS |
-| [`docs/SUMBER.md`](docs/SUMBER.md) | Penjelasan sumber proyek dan teknologi yang digunakan |
-| [GitHub Actions Run #2](https://github.com/fikriianwarr/esoria-codefest-uts/actions/runs/40434638852) | Bukti tiga job berhasil |
-
-> Panduan teknis pada `docs/` dibuat sejak tahap persiapan proyek. **Status eksekusi terbaru yang didokumentasikan dalam README ini adalah Run #2**, sehingga pernyataan awal di dokumen persiapan tentang deployment yang belum diaktifkan tidak boleh dipakai sebagai status akhir.
-
-## Tim Kelompok Esoria
-
-**Universitas Mikroskil · Fakultas Informatika · Program Studi S-1 Teknik Informatika**
-
-| Anggota | NIM | Fokus penjelasan pada demonstrasi |
-| :-- | :-- | :-- |
-| **Fikri Anwar** | `231112145` | Dockerfile, Compose, container, port, dan website |
-| **Muhammad Alfisyahrin** | `231112853` | GitHub Actions, GHCR, self-hosted runner, CI/CD |
-| **Havidz Andrian** | `231111899` | Pengujian, API, SQLite, persistensi, dokumentasi |
-
-Pembagian di atas adalah **alokasi tanggung jawab** untuk laporan/presentasi, bukan bukti kepemilikan kode per commit.
-
-**Video demonstrasi UTS: satu video kelompok yang memuat penjelasan ketiga anggota.** Tautan video akan ditambahkan setelah rekaman diunggah dan dapat dibuka oleh penguji tanpa login.
-
----
-
-<div align="center">
-  <strong>ESORIA CODEFEST</strong>
-
-  <sub>BUILD. SECURE. COMPETE. · Versi aplikasi 1.0.0 · Bukti rilis: 27 Oktober 2026</sub>
-</div>
+**Batas klaim rubrik:** Uji kode lokal tidak sama dengan bukti Docker Desktop dan deployment GitHub Actions. Penilaian UTS 100 poin mencakup container (50), CI/CD (20), video (20), dan laporan (10). Video dan laporan tidak dibuat dalam paket ini sesuai permintaan, sehingga nilai 100 tidak bisa dijamin dari ZIP saja.
