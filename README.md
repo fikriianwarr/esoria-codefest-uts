@@ -14,15 +14,23 @@
  **Fikri Anwar** (NIM: 231112145) |
  **Muhammad Alfisyahrin** (NIM: 231112853)
 
-  **UTS Pengembangan dan Operasi · IF-B Pagi · T.A. 2026/2027**
-  
-**Link video presentasi & demo: https://youtu.be/zcOF-xwKlBs?si=sCpMBJPNYbbfNb8c**
-  `Node.js 24` &nbsp;·&nbsp; `Docker` &nbsp;·&nbsp; `SQLite` &nbsp;·&nbsp; `GitHub Actions` &nbsp;·&nbsp; `GHCR`
+ <div align="center">
 
-  [**Mulai menjalankan**](#jalankan-aplikasi) &nbsp;|&nbsp;
-  [**Alur CI/CD**](#alur-ci-dan-cd) &nbsp;|&nbsp;
-  [**Bukti pengujian**](#bukti-pengujian) &nbsp;|&nbsp;
-  [**Dokumentasi**](#dokumentasi)
+**UTS Pengembangan dan Operasi · IF-B Pagi · T.A. 2026/2027**
+
+**Link video presentasi & demo: https://youtu.be/zcOF-xwKlBs?si=sCpMBJPNYbbfNb8c**
+
+<br>
+
+`Node.js 24` &nbsp;·&nbsp; `Docker` &nbsp;·&nbsp; `SQLite` &nbsp;·&nbsp; `GitHub Actions` &nbsp;·&nbsp; `GHCR`
+
+<br>
+
+[**Mulai menjalankan**](#jalankan-aplikasi) &nbsp;|&nbsp;
+[**Alur CI/CD**](#alur-ci-dan-cd) &nbsp;|&nbsp;
+[**Bukti pengujian**](#bukti-pengujian) &nbsp;|&nbsp;
+[**Dokumentasi**](#dokumentasi)
+
 </div>
 
 ---
