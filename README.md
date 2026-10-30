@@ -22,8 +22,7 @@
 ---
 
 > [!IMPORTANT]
-> **Ruang lingkup:** repository ini berisi **ESORIA CodeFest edisi UTS** untuk praktik container dan CI/CD. Aplikasi menggunakan Node.js + SQLite dan **bukan salinan fitur lengkap** website ESORIA berbasis Firebase yang dikembangkan sebelumnya.
-
+> **Ruang lingkup:** repository ini berisi **ESORIA CodeFest edisi UTS** untuk praktik container dan CI/CD. Aplikasi menggunakan Node.js + SQLite dan **bukan salinan fitur lengkap** website ESORIA berbasis Firebase yang dikembangkan sebelumnya seperti pada versi untuk lomba kami tidak digunakan lagi disini karena sudah berbeda penerapannya.
 
 ESORIA CodeFest adalah aplikasi web pengelolaan kompetisi informatika dengan antarmuka editorial, sistem akun, pendaftaran, pengelolaan kategori, dan dashboard administrasi. Edisi UTS mengutamakan proses **build → test → publish → deploy** yang dapat diperiksa melalui Docker dan GitHub Actions.
 
