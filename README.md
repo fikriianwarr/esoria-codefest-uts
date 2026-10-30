@@ -308,5 +308,5 @@ esoria-codefest-uts/
 <div align="center">
   <strong>ESORIA CODEFEST</strong>
 
-  <sub>BUILD. SECURE. COMPETE. · Versi aplikasi 1.0.0 · Bukti rilis: 27 Oktober 2026</sub>
+  <sub>BUILD. SECURE. COMPETE. · Versi aplikasi 1.0.0 · Rilis: 27 Oktober 2026</sub>
 </div>
