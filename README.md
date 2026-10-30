@@ -24,7 +24,6 @@
 > [!IMPORTANT]
 > **Ruang lingkup:** repository ini berisi **ESORIA CodeFest edisi UTS** untuk praktik container dan CI/CD. Aplikasi menggunakan Node.js + SQLite dan **bukan salinan fitur lengkap** website ESORIA berbasis Firebase yang dikembangkan sebelumnya.
 
-## Sekilas proyek
 
 ESORIA CodeFest adalah aplikasi web pengelolaan kompetisi informatika dengan antarmuka editorial, sistem akun, pendaftaran, pengelolaan kategori, dan dashboard administrasi. Edisi UTS mengutamakan proses **build → test → publish → deploy** yang dapat diperiksa melalui Docker dan GitHub Actions.
 
@@ -295,15 +294,14 @@ esoria-codefest-uts/
 
 **Universitas Mikroskil · Fakultas Informatika · Program Studi S-1 Teknik Informatika**
 
-| Anggota | NIM | Fokus penjelasan pada demonstrasi |
+| Anggota | NIM | Kontribusi |
 | :-- | :-- | :-- |
 | **Fikri Anwar** | `231112145` | Dockerfile, Compose, container, port, dan website |
 | **Muhammad Alfisyahrin** | `231112853` | GitHub Actions, GHCR, self-hosted runner, CI/CD |
 | **Havidz Andrian** | `231111899` | Pengujian, API, SQLite, persistensi, dokumentasi |
 
-Pembagian di atas adalah **alokasi tanggung jawab** untuk laporan/presentasi, bukan bukti kepemilikan kode per commit.
 
-**Video demonstrasi UTS: satu video kelompok yang memuat penjelasan ketiga anggota.** Tautan video akan ditambahkan setelah rekaman diunggah dan dapat dibuka oleh penguji tanpa login.
+**Link video presentasi & demo: 
 
 ---
 
