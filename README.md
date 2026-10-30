@@ -11,9 +11,9 @@
   *Surut layar terkembang, surut kita berpantang*
 ### Kelompok Esoria
 
-1. **Havidz Andrian** (NIM: 231111899)
-2. **Fikri Anwar** (NIM: 231112145)
-3. **Muhammad Alfisyahrin** (NIM: 231112853)
+ **Havidz Andrian** (NIM: 231111899)
+ **Fikri Anwar** (NIM: 231112145)
+ **Muhammad Alfisyahrin** (NIM: 231112853)
 
   **UTS Pengembangan dan Operasi · IF-B Pagi · T.A. 2026/2027**
 
