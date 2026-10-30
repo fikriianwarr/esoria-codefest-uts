@@ -7,8 +7,9 @@
 
   **BUILD. SECURE. COMPETE.**
 
-  *Ubah ide kamu menjadi karya dengan kami.* 
-  *Surut layar terkembang, surut kita berpantang*
+# Ubah ide kamu menjadi karya dengan kami.
+### *Surut layar terkembang, surut kita berpantang*
+
 ### Kelompok Esoria
 
  **Havidz Andrian** (NIM: 231111899) |
