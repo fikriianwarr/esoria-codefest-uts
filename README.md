@@ -299,7 +299,7 @@ esoria-codefest-uts/
 | **Havidz Andrian** | `231111899` | Pengujian, API, SQLite, persistensi, dokumentasi |
 
 
-**Link video presentasi & demo: https://youtu.be/zcOF-xwKlBs?si=sCpMBJPNYbbfNb8c
+##Link video presentasi & demo: https://youtu.be/zcOF-xwKlBs?si=sCpMBJPNYbbfNb8c
 
 ---
 
