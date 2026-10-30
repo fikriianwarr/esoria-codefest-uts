@@ -7,7 +7,7 @@
 
   **BUILD. SECURE. COMPETE.**
 
-  *Dari ide menjadi karya. Dari pengujian menjadi rilis yang terverifikasi.*
+  *Ubah ide kamu menjadi karya.* *Surut layar terkembang, surut kita berpantang*
 
   **UTS Pengembangan dan Operasi · IF-B Pagi · T.A. 2026/2027**
 
