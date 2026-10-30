@@ -26,7 +26,7 @@
 
 ESORIA CodeFest adalah aplikasi web pengelolaan kompetisi informatika dengan antarmuka editorial, sistem akun, pendaftaran, pengelolaan kategori, dan dashboard administrasi. Edisi UTS mengutamakan proses **build → test → publish → deploy** yang dapat diperiksa melalui Docker dan GitHub Actions.
 
-| Lapisan | Teknologi dan penerapan |
+| Komponen | Teknologi dan penerapan |
 | :-- | :-- |
 | **Antarmuka** | HTML5, CSS3, JavaScript native; responsif |
 | **Server & API** | Node.js `24.22.1`, ES Modules, API HTTP |
