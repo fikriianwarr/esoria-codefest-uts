@@ -29,6 +29,8 @@ test('pemeriksaan runtime memakai port aktual Docker dan tidak mengarang bukti r
     const r = await checkRuntime({ run, expectedSha: 'a'.repeat(40), env: {} });
     assert.equal(r.health, 'healthy'); assert.equal(r.database, 'ok'); assert.equal(r.commitComparedToPipeline, true);
     assert.equal(r.persistenceAfterRestart, 'requires_before_after_test');
+    const checkLocal = await checkRuntime({ run, expectedRelease: 'a'.repeat(40), env: {} });
+    assert.equal(checkLocal.commitComparedToExpectedRelease, true);
   });
 });
 test('pemeriksaan runtime menolak container unhealthy sebelum memberi hasil sukses', async () => {
@@ -38,5 +40,5 @@ test('pemeriksaan runtime menolak penyimpanan yang tidak memakai volume ESORIA',
   await fixture(async run => { await assert.rejects(() => checkRuntime({ run, env: {} }), /named volume/); }, { volume: false });
 });
 test('pemeriksaan runtime menolak commit yang berbeda dari pipeline', async () => {
-  await fixture(async run => { await assert.rejects(() => checkRuntime({ run, env: {}, expectedSha: 'c'.repeat(40) }), /berbeda/); });
+  await fixture(async run => { await assert.rejects(() => checkRuntime({ run, env: {}, expectedSha: 'c'.repeat(40) }), error => /berbeda/.test(error.message) && error.message.includes('a'.repeat(40)) && error.message.includes('c'.repeat(40))); });
 });

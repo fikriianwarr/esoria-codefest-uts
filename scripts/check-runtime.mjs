@@ -5,7 +5,8 @@ import { fileURLToPath } from 'node:url';
 import { runCommand } from './start-local.mjs';
 
 const projectRoot = fileURLToPath(new URL('../', import.meta.url));
-export async function checkRuntime({ root = projectRoot, env = process.env, run = runCommand, expectedSha = '', save = false } = {}) {
+export async function checkRuntime({ root = projectRoot, env = process.env, run = runCommand, expectedSha = '', expectedRelease = '', save = false } = {}) {
+  assert.ok(!(expectedSha && expectedRelease), 'Pilih hanya satu pemeriksaan: --expected-sha atau --expected-release.');
   async function docker(args) {
     const result = await run('docker', args, { cwd: root, env, quiet: true });
     assert.equal(result.code, 0, 'Docker/Compose belum siap. Jalankan mulai.cmd dan periksa docker compose ps.');
@@ -37,14 +38,17 @@ export async function checkRuntime({ root = projectRoot, env = process.env, run 
   assert.equal(health.app, 'esoria-uts'); assert.equal(health.status, 'ok'); assert.equal(health.database, 'ok');
   const release = await (await request('/api/release')).json();
   assert.ok(typeof release.commit === 'string' && release.commit.length > 0, 'Identitas rilis tidak tersedia.');
-  if (expectedSha) assert.equal(release.commit, expectedSha, 'Commit runtime berbeda dari commit pipeline.');
+  if (expectedSha && release.commit !== expectedSha) {
+    throw new Error(`Commit runtime berbeda dari commit pipeline. Ditemukan: ${release.commit}; diminta: ${expectedSha}. Jika menggunakan image lokal, jalankan --expected-release local. Jangan mengklaim SHA GitHub cocok dengan image lokal.`);
+  }
+  if (expectedRelease) assert.equal(release.commit, expectedRelease, 'Identitas release runtime berbeda dari nilai yang diminta.');
   const html = await (await request('/')).text();
   assert.match(html, /ESORIA/i, 'Halaman utama bukan halaman ESORIA.');
   const report = {
     checkedAt: new Date().toISOString(), containerId: id, status: 'running', health: 'healthy', database: 'ok',
     port, url: `http://localhost:${port}`, imageId, commit: release.commit,
     volume: { name: volume.Name, destination: volume.Destination }, html: 'accessible',
-    commitComparedToPipeline: Boolean(expectedSha), persistenceAfterRestart: 'requires_before_after_test', browserAppearance: 'requires_visual_confirmation'
+    commitComparedToPipeline: Boolean(expectedSha), commitComparedToExpectedRelease: Boolean(expectedRelease), persistenceAfterRestart: 'requires_before_after_test', browserAppearance: 'requires_visual_confirmation'
   };
   if (save) {
     const directory = path.join(root, 'evidence', 'local');
@@ -58,8 +62,18 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   try {
     const i = process.argv.indexOf('--expected-sha');
     const expectedSha = i >= 0 ? process.argv[i + 1] : '';
-    if (i >= 0) assert.match(String(expectedSha || ''), /^(?:[a-f0-9]{40}|[a-f0-9]{64})$/i, 'Isi --expected-sha dengan commit pipeline yang lengkap.');
-    const report = await checkRuntime({ expectedSha, save: process.argv.includes('--save') });
+    if (i >= 0) {
+      // A trailing backslash is frequently pasted from a line-wrap in PowerShell.
+      // Never convert it into a valid SHA silently: an expected-SHA check is an integrity check.
+      if (/^(?:[a-f0-9]{40}|[a-f0-9]{64})\\+$/i.test(String(expectedSha || ''))) {
+        throw new Error('Perintah salah salin: ada karakter backslash (\\) setelah SHA. Hapus backslash tersebut. Jika /api/release mengembalikan commit=local, gunakan: node scripts/check-runtime.mjs --expected-release local. SHA GitHub tidak dapat diverifikasi pada image lokal.');
+      }
+      assert.match(String(expectedSha || ''), /^(?:[a-f0-9]{40}|[a-f0-9]{64})$/i, 'Isi --expected-sha dengan commit pipeline yang lengkap tanpa backslash atau tanda tambahan. Untuk image lokal gunakan --expected-release local.');
+    }
+    const j = process.argv.indexOf('--expected-release');
+    const expectedRelease = j >= 0 ? process.argv[j + 1] : '';
+    if (j >= 0) assert.match(String(expectedRelease || ''), /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,80}$/, 'Isi --expected-release dengan identitas rilis dari /api/release, misalnya local.');
+    const report = await checkRuntime({ expectedSha, expectedRelease, save: process.argv.includes('--save') });
     console.log(`Container healthy, database ok, halaman dapat diakses: ${report.url}`);
     console.log(`Volume: ${report.volume.name}; commit: ${report.commit}`);
     if (process.argv.includes('--save')) console.log('Hasil pemeriksaan disimpan pada evidence/local/.');

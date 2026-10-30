@@ -6,10 +6,17 @@ RUN npm ci --ignore-scripts --no-audit --no-fund
 COPY app ./app
 COPY scripts ./scripts
 COPY tests ./tests
+COPY docs/PERINTAH_WINDOWS_FINAL_SIAP_SALIN.md ./docs/PERINTAH_WINDOWS_FINAL_SIAP_SALIN.md
 # Dipakai oleh tests/deploy-regression.test.mjs saat verifikasi di image Docker.
 COPY compose.deploy.yaml ./compose.deploy.yaml
 COPY compose.yaml ./compose.yaml
 COPY .github/workflows/esoria-ci-cd.yml ./.github/workflows/esoria-ci-cd.yml
+# Pengujian Windows memeriksa isi launcher: file ini hanya disalin ke tahap verify.
+# Tidak disertakan pada image runtime produksi.
+COPY *.cmd ./
+COPY *.ps1 ./
+# Uji regresi mengaudit kontrak build context, sehingga Dockerfile dan .dockerignore harus terbaca.
+COPY Dockerfile .dockerignore ./
 RUN npm run check && npm test
 
 FROM node:24.22.1-bookworm-slim AS runtime

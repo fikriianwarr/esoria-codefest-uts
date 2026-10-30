@@ -5,15 +5,19 @@ node_modules
 data
 .preview-data
 referensi
-docs
+docs/*
+!docs/PERINTAH_WINDOWS_FINAL_SIAP_SALIN.md
 evidence
 *.zip
 *.log
 test-results
 .openai
 README.md
-*.cmd
+# File .cmd diperlukan untuk regresi launcher pada stage verify Docker.
 # Kedua file Compose wajib masuk build context untuk tahap verify di Dockerfile.
 # Jangan abaikan compose.yaml atau compose.deploy.yaml.
 
 # Workflow CI/CD disertakan pada stage verifikasi agar test rubrik berjalan di image.
+
+# Isolated fixtures for the cross-platform deploy regression tests.
+.esoria-deploy-test-*/

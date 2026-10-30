@@ -1,7 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, writeFile, readFile, rm } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -15,8 +14,8 @@ const oldConfig = "ADMIN_EMAIL='old@example.test'\nADMIN_PASSWORD='Old-Password-
 const oldCompose = '# old deployment configuration\n';
 const fakeDocker = `#!/usr/bin/env node
 import fs from 'node:fs';
-import path from 'node:path';
-const args=process.argv.slice(2),p=process.env.ESORIA_TEST_DOCKER_STATE;
+// Locate the test state relative to this shim; works for native Node and WSL Node.
+const args=process.argv.slice(2),p=new URL('../docker-state.json',import.meta.url);
 const s=JSON.parse(fs.readFileSync(p,'utf8'));
 s.calls.push({args,image:process.env.ESORIA_IMAGE||'',env:fs.existsSync('.env')?fs.readFileSync('.env','utf8'):'',ambientPort:process.env.APP_PORT||'',ambientPasswordPresent:!!process.env.ADMIN_PASSWORD});
 let code=0;
@@ -29,7 +28,9 @@ fs.writeFileSync(p,JSON.stringify(s));
 process.exitCode=code;
 `;
 async function fixture(fn, { prior = true, failFirstUp = false, failPull = false } = {}) {
-  const dir = await mkdtemp(path.join(tmpdir(), 'esoria-deploy-test-'));
+  // On Windows this suite executes inside an isolated Linux container.
+  // Relative POSIX paths work without passing drive paths into Bash.
+  const dir = await mkdtemp(path.join(root, '.esoria-deploy-test-'));
   const deployment = path.join(dir, 'deployment'), bin = path.join(dir, 'bin'), stateFile = path.join(dir, 'docker-state.json');
   await mkdir(deployment); await mkdir(bin);
   await writeFile(path.join(bin, 'docker'), fakeDocker, { mode: 0o700 });
@@ -40,11 +41,15 @@ async function fixture(fn, { prior = true, failFirstUp = false, failPull = false
     await writeFile(path.join(deployment, 'compose.yaml'), oldCompose);
     await writeFile(path.join(deployment, 'current-image'), `${oldImage}\n`);
   }
-  const env = { ...process.env, PATH: `${bin}${path.delimiter}${process.env.PATH}`, ESORIA_TEST_DOCKER_STATE: stateFile, ESORIA_DEPLOY_DIR: deployment,
+  const env = { ...process.env, ESORIA_DEPLOY_DIR: 'deployment',
     ESORIA_IMAGE: newImage, ESORIA_EXPECTED_SHA: expectedSha, ESORIA_ADMIN_EMAIL: 'new@example.test', ESORIA_ADMIN_PASSWORD: 'New-Password-2026!', ESORIA_APP_PORT: '8089',
     ESORIA_BIND_ADDRESS: '127.0.0.1', ESORIA_COOKIE_SECURE: 'false', ESORIA_HTTP_TIMEOUT_MS: '1000' };
   async function run(script = 'deploy.sh', extra = {}) {
-    const child = spawn('bash', [path.join(root, 'scripts', script)], { env: { ...env, ...extra }, stdio: ['ignore', 'pipe', 'pipe'] });
+    // Resolve the fake Docker bin to a Bash-native absolute path before scripts
+    // change directory. Pass only relative script paths, never Windows drive paths.
+    const child = spawn('bash', ['-c',
+      'export PATH="$(cd bin && pwd):$PATH"; exec bash "../scripts/$1"',
+      'esoria-deploy-test', script], { cwd: dir, env: { ...env, ...extra }, stdio: ['ignore', 'pipe', 'pipe'] });
     let output = ''; for (const stream of [child.stdout, child.stderr]) stream.on('data', c => { output += c; });
     const code = await new Promise((resolve, reject) => { child.once('error', reject); child.once('close', resolve); });
     return { code, output, state: JSON.parse(await readFile(stateFile, 'utf8')) };

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="420" viewBox="0 0 1400 420" role="img" aria-labelledby="title desc">
+  <title id="title">ESORIA CodeFest — UTS Container and CI/CD</title>
+  <desc id="desc">Sampul editorial berwarna krem, hijau tua, dan merah bata untuk dokumentasi proyek ESORIA CodeFest.</desc>
+  <defs>
+    <pattern id="paper" width="21" height="21" patternUnits="userSpaceOnUse"><path d="M0 20H21M20 0V21" fill="none" stroke="#d6d1c4" stroke-width=".65" opacity=".27"/></pattern>
+    <pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#a3b9a3" opacity=".65"/></pattern>
+  </defs>
+  <rect width="1400" height="420" fill="#f4efe5"/>
+  <rect width="1400" height="420" fill="url(#paper)"/>
+  <rect x="24" y="24" width="1352" height="372" rx="3" fill="none" stroke="#172d35" stroke-width="2"/>
+  <rect x="24" y="24" width="1352" height="43" fill="#172d35"/>
+  <text x="58" y="52" fill="#f4efe5" font-size="15" letter-spacing="4" font-weight="700" font-family="Arial, Helvetica, sans-serif">ESORIA / ENGINEERING EDITION</text>
+  <text x="1342" y="52" fill="#e5e9cc" font-size="14" letter-spacing="2" font-weight="700" text-anchor="end" font-family="Arial, Helvetica, sans-serif">UTS · 2026</text>
+  <rect x="58" y="104" width="5" height="24" fill="#b84635"/>
+  <text x="82" y="121" fill="#245a47" font-family="Arial, Helvetica, sans-serif" font-size="15" letter-spacing="5" font-weight="700">BUILD · VERIFY · SHIP</text>
+  <text x="58" y="207" fill="#172d35" font-size="79" font-family="Georgia, 'Times New Roman', serif" font-weight="700" letter-spacing="-3">ESORIA</text>
+  <text x="60" y="280" fill="#245a47" font-size="69" font-family="Georgia, 'Times New Roman', serif" font-style="italic" letter-spacing="-2">CodeFest.</text>
+  <path d="M60 314H760" stroke="#172d35" stroke-width="1.5"/>
+  <text x="60" y="348" fill="#172d35" font-size="19" font-weight="700" font-family="Arial, Helvetica, sans-serif" letter-spacing=".5">WEB COMPETITION PLATFORM</text>
+  <text x="60" y="374" fill="#596c69" font-size="15" font-family="Arial, Helvetica, sans-serif" letter-spacing="1.3">NODE.JS  ·  SQLITE  ·  DOCKER  ·  GITHUB ACTIONS</text>
+  <rect x="842" y="101" width="472" height="263" rx="3" fill="#fffdf7" stroke="#172d35" stroke-width="2"/>
+  <rect x="858" y="117" width="440" height="231" fill="url(#dots)"/>
+  <rect x="883" y="147" width="131" height="167" rx="4" fill="#172d35"/>
+  <text x="902" y="173" fill="#a8cdbd" font-size="13" font-weight="700" font-family="Arial, Helvetica, sans-serif" letter-spacing="2">SOURCE</text>
+  <text x="902" y="204" fill="#fffdf7" font-size="16" font-family="monospace">&lt; / &gt;</text>
+  <path d="M919 220V270" stroke="#a8cdbd" stroke-width="2" stroke-dasharray="4 6"/>
+  <text x="902" y="292" fill="#fffdf7" font-size="12" font-family="monospace">git commit</text>
+  <path d="M1014 229H1058" stroke="#b84635" stroke-width="5" stroke-linecap="round"/>
+  <path d="M1047 217L1060 229L1047 241" fill="none" stroke="#b84635" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="1060" y="148" width="208" height="76" rx="4" fill="#245a47"/>
+  <text x="1076" y="176" fill="#fffdf7" font-size="16" font-weight="700" font-family="Arial, Helvetica, sans-serif">CI / VERIFY</text>
+  <text x="1076" y="202" fill="#dce9b6" font-size="12" font-family="monospace">test → build → check</text>
+  <path d="M1164 224V253" stroke="#b84635" stroke-width="5" stroke-linecap="round"/>
+  <path d="M1152 243L1164 255L1176 243" fill="none" stroke="#b84635" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="1060" y="257" width="208" height="57" rx="4" fill="#e7eee2" stroke="#245a47" stroke-width="2"/>
+  <text x="1076" y="281" fill="#172d35" font-size="15" font-weight="700" font-family="Arial, Helvetica, sans-serif">CD / RELEASE</text>
+  <text x="1076" y="300" fill="#245a47" font-size="12" font-family="monospace">GHCR → Docker</text>
+  <rect x="798" y="327" width="63" height="28" rx="14" fill="#b84635"/>
+  <text x="829" y="346" fill="#fffdf7" font-size="13" font-weight="700" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">v1.0</text>
+</svg>

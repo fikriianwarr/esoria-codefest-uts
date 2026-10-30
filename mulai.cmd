@@ -31,16 +31,18 @@ if exist ".env" (
 if defined ESORIA_PORT (
   echo.
   echo Website: http://localhost:%ESORIA_PORT%
-  start "" "http://localhost:%ESORIA_PORT%"
+  if /I not "%ESORIA_NO_PAUSE%"=="1" start "" "http://localhost:%ESORIA_PORT%"
 )
 echo.
 echo Website aktif. Menutup jendela ini tidak menghentikan container Docker.
 echo Untuk menghentikan: docker compose down
+if /I "%ESORIA_NO_PAUSE%"=="1" exit /b 0
 pause
 exit /b 0
 
 :gagal
 echo.
 echo Gagal menjalankan website. Lihat pesan di atas dan README.md.
+if /I "%ESORIA_NO_PAUSE%"=="1" exit /b 1
 pause
 exit /b 1
