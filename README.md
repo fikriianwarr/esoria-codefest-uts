@@ -55,7 +55,7 @@ ESORIA CodeFest adalah aplikasi web pengelolaan kompetisi informatika dengan ant
 - **Node.js `>=24.22.1 <25`** terpasang dan dapat dipanggil dari terminal.
 - Source diekstrak ke folder biasa, bukan dijalankan langsung dari dalam ZIP.
 
-### Cara tercepat (Windows)
+### (Windows)
 
 **1.** Jalankan Docker Desktop dan pastikan Docker Engine siap.
 
