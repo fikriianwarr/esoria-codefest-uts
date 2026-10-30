@@ -15,7 +15,7 @@
  **Muhammad Alfisyahrin** (NIM: 231112853)
 
   **UTS Pengembangan dan Operasi · IF-B Pagi · T.A. 2026/2027**
-
+**Link video presentasi & demo: https://youtu.be/zcOF-xwKlBs?si=sCpMBJPNYbbfNb8c**
   `Node.js 24` &nbsp;·&nbsp; `Docker` &nbsp;·&nbsp; `SQLite` &nbsp;·&nbsp; `GitHub Actions` &nbsp;·&nbsp; `GHCR`
 
   [**Mulai menjalankan**](#jalankan-aplikasi) &nbsp;|&nbsp;
@@ -297,10 +297,6 @@ esoria-codefest-uts/
 | **Fikri Anwar** | `231112145` | Dockerfile, Compose, container, port, dan website |
 | **Muhammad Alfisyahrin** | `231112853` | GitHub Actions, GHCR, self-hosted runner, CI/CD |
 | **Havidz Andrian** | `231111899` | Pengujian, API, SQLite, persistensi, dokumentasi |
-
-
-**Link video presentasi & demo: https://youtu.be/zcOF-xwKlBs?si=sCpMBJPNYbbfNb8c**
-
 ---
 
 <div align="center">
