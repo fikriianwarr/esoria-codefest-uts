@@ -7,7 +7,7 @@
 
   **BUILD. SECURE. COMPETE.**
 
-  *Ubah ide kamu menjadi karya.* 
+  *Ubah ide kamu menjadi karya dengan kami.* 
   *Surut layar terkembang, surut kita berpantang*
 ### Kelompok Esoria
 
