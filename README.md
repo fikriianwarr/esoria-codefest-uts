@@ -7,7 +7,13 @@
 
   **BUILD. SECURE. COMPETE.**
 
-  *Ubah ide kamu menjadi karya.* *Surut layar terkembang, surut kita berpantang*
+  *Ubah ide kamu menjadi karya.* 
+  *Surut layar terkembang, surut kita berpantang*
+### Kelompok Esoria
+
+1. **Havidz Andrian** (NIM: 231111899)
+2. **Fikri Anwar** (NIM: 231112145)
+3. **Muhammad Alfisyahrin** (NIM: 231112853)
 
   **UTS Pengembangan dan Operasi · IF-B Pagi · T.A. 2026/2027**
 
@@ -286,10 +292,7 @@ esoria-codefest-uts/
 
 > Panduan teknis pada `docs/` dibuat sejak tahap persiapan proyek. **Status eksekusi terbaru yang didokumentasikan dalam README ini adalah Run #2**, sehingga pernyataan awal di dokumen persiapan tentang deployment yang belum diaktifkan tidak boleh dipakai sebagai status akhir.
 
-## Tim Kelompok Esoria
-
-**Universitas Mikroskil · Fakultas Informatika · Program Studi S-1 Teknik Informatika**
-
+## Tim Esoria
 | Anggota | NIM | Kontribusi |
 | :-- | :-- | :-- |
 | **Fikri Anwar** | `231112145` | Dockerfile, Compose, container, port, dan website |
