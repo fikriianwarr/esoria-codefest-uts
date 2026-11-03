@@ -1,4 +1,3 @@
-
 <div align="center">
   <a href="https://github.com/fikriianwarr/esoria-codefest-uts">
     <img src="app/public/assets/logo_esoria.webp" alt="Logo ESORIA CodeFest" width="100" />
@@ -59,6 +58,7 @@ ESORIA CodeFest adalah aplikasi web pengelolaan kompetisi informatika dengan ant
 | **Peserta** | Registrasi akun, masuk, melihat kategori, mendaftar, melihat status/tiket, mengelola profil, dan mengirim tautan karya |
 | **Admin** | Meninjau pendaftaran, mengelola kategori, memantau statistik dan aktivitas |
 | **Operasional** | Melihat status layanan dan informasi rilis aplikasi |
+
 ---
 
 ## Jalankan aplikasi
@@ -118,7 +118,7 @@ Pada setup awal, sistem membuat `.env` dengan kata sandi admin acak. Email defau
 | Tahap | Proses | Hasil |
 | :-- | :-- | :-- |
 | **01 · SOURCE** | Commit / pull request pada GitHub | Source masuk ke workflow |
-| **02 · VERIFY** | Pemeriksaan source, 81 automated tests pada Run #2 (tahap awal), build dan smoke test Docker | Image yang lulus pengujian |
+| **02 · VERIFY** | Pemeriksaan source, pengujian otomatis, build dan smoke test Docker. Pipeline terdokumentasi menjalankan 81 tes pada versi awal; pengujian lokal versi final mencatat 94 tes | Image yang lulus pengujian |
 | **03 · PUBLISH** | Upload image teruji ke GHCR saat CD diaktifkan | Referensi image berbasis digest |
 | **04 · DEPLOY** | Self-hosted runner mengambil image dan menjalankan Docker Compose | Container aplikasi terbaru |
 | **05 · VALIDATE** | Periksa HTTP, database, status sehat, dan SHA rilis | Deployment terverifikasi; kegagalan ditangani skrip pemulihan |
@@ -170,7 +170,13 @@ Autentikasi ke GHCR dalam workflow memakai **`GITHUB_TOKEN` yang disediakan GitH
 
 ## Bukti pengujian
 
-Dokumentasi berikut merujuk pada **GitHub Actions Run #2 tanggal 27 Oktober 2026**, bukan status real-time dari seluruh run berikutnya. Setelah pengujian awal tersebut, kelompok juga melakukan pengujian lanjutan pada kode aplikasi yang telah diperbarui dan disempurnakan.
+Pengujian aplikasi ESORIA CodeFest dilakukan secara bertahap untuk memastikan fungsi sistem, keamanan, serta kesiapan aplikasi sebelum digunakan. **Pada tahap pengujian pertama, sebanyak 81 dari 81 pengujian berhasil diselesaikan tanpa kegagalan.** Hasil tersebut menjadi bukti awal keberhasilan pemeriksaan kode dan implementasi container yang tercatat dalam GitHub Actions Run #2 tanggal 27 Oktober 2026.
+
+Setelah tahap awal selesai, kelompok melakukan pembaruan dan penyempurnaan kode aplikasi, kemudian melaksanakan **pengujian tahap kedua sebagai pengujian versi final**. Berdasarkan rekapitulasi pengujian lokal, sebanyak **94 dari 94 pengujian berhasil dijalankan tanpa kegagalan**, terdiri atas 85 pengujian Windows natif dan 9 pengujian Linux terisolasi. Hasil ini menunjukkan peningkatan jumlah pemeriksaan yang terdokumentasi dari 81 menjadi 94 pengujian. Dengan demikian, 81 merupakan hasil pengujian versi awal, sedangkan 94 menjadi hasil pengujian lanjutan pada versi kode yang telah diperbarui.
+
+Kedua hasil tersebut berasal dari tahap pengujian yang berbeda. GitHub Actions Run #2 tetap menjadi bukti keberhasilan pipeline CI/CD dengan 81 pengujian, sementara hasil 94 pengujian berasal dari pemeriksaan lokal versi final yang didokumentasikan pada SS 10 dalam Lampiran E laporan UTS.
+
+### Hasil GitHub Actions Run #2 (Pengujian Tahap Awal)
 
 | Job | Hasil pada Run #2 | Durasi job |
 | :-- | :--: | --: |
@@ -179,11 +185,18 @@ Dokumentasi berikut merujuk pada **GitHub Actions Run #2 tanggal 27 Oktober 2026
 | Deploy on group machine — `deploy` | **SUCCESS** | 1 menit 21 detik |
 | **Workflow keseluruhan** | **SUCCESS** | **9 menit 48 detik** |
 
-**Hasil tambahan yang sudah terdokumentasi:**
+### Rekapitulasi Hasil Pengujian Aplikasi
 
-- **94 dari 94 pengujian pada tahap akhir (versi final) lulus**, terdiri atas 85 pengujian Windows natif dan 9 pengujian Linux terisolasi, setelah pembaruan dan penyempurnaan kode aplikasi. Seluruh pengujian pada rekapitulasi akhir tersebut berhasil tanpa kegagalan. Hasil pengujian lokal versi final didokumentasikan pada SS 10 (Lampiran E laporan UTS), bukan pada log GitHub Actions Run #2.
-- **81 dari 81 automated tests pada GitHub Actions Run #2 lulus**, tanpa kegagalan. Angka 81 merupakan hasil tahap awal yang tercatat pada pipeline tanggal 27 Oktober 2026, sedangkan 94 merupakan hasil pengujian lanjutan setelah pembaruan kode.
-- Container `esoria-uts-web-1` berstatus **healthy** setelah deployment.
+| Tahap pengujian | Jumlah tes | Lulus | Gagal | Keterangan |
+| :-- | :--: | :--: | :--: | :-- |
+| **Tahap 1 – Versi awal** | 81 | 81 | 0 | Hasil awal yang tercatat pada GitHub Actions Run #2 dan bukti SS 09 |
+| **Tahap 2 – Versi final** | 94 | 94 | 0 | Hasil pengujian lokal setelah pembaruan kode, didokumentasikan pada SS 10 |
+
+**Hasil akhir yang sudah terdokumentasi:**
+
+- **94 dari 94 pengujian versi final lulus**, tanpa kegagalan, berdasarkan rekapitulasi pengujian lokal setelah pembaruan dan penyempurnaan kode.
+- **81 dari 81 automated tests pada GitHub Actions Run #2 lulus**, tanpa kegagalan, sebagai hasil pengujian tahap awal.
+- Container `esoria-uts-web-1` berstatus **healthy** setelah deployment yang terdokumentasi.
 - `/api/health` mengembalikan `status: ok` dan `database: ok`.
 - `/api/release` menunjukkan versi `1.0.0` serta commit yang sesuai dengan pipeline.
 - Data SQLite berada pada named volume `esoria_uts_data`.
@@ -205,7 +218,7 @@ ghcr.io/fikriianwarr/esoria-codefest-uts/esoria-uts@sha256:98fc41ff9800153906847
 </details>
 
 > [!NOTE]
-> Run #2 berhasil melalui **pemicu manual (`workflow_dispatch`)**. Trigger `push` telah dikonfigurasi, tetapi demonstrasi perubahan aplikasi melalui push baru tidak diklaim sudah diuji secara terpisah. Repository masih **Private** pada screenshot yang didokumentasikan; penguji memerlukan akses untuk membuka kode dan bukti GitHub.
+> GitHub Actions Run #2 berhasil melalui **pemicu manual (`workflow_dispatch`)** dan mendokumentasikan keberhasilan tiga job utama, yaitu `verify`, `publish`, dan `deploy`. Hasil pengujian versi final sebanyak 94 tes merupakan pengujian lokal lanjutan, bukan hasil yang tercatat pada Run #2. Trigger `push` telah dikonfigurasi, tetapi demonstrasi perubahan aplikasi melalui push baru tidak diklaim sudah diuji secara terpisah. Repository masih **Private** pada screenshot yang didokumentasikan; penguji memerlukan akses untuk membuka kode dan bukti GitHub.
 
 ### Perintah verifikasi lokal
 
@@ -225,7 +238,7 @@ curl.exe -fsS http://localhost:8088/api/health
 curl.exe -fsS http://localhost:8088/api/release
 ```
 
-Berkas audit lokal dari skrip verifikasi dapat ditemukan di `evidence/local/` setelah pemeriksaan berhasil. Jangan menafsirkan hasil uji lokal sebagai pengganti status GitHub Actions.
+Berkas audit lokal dari skrip verifikasi dapat ditemukan di `evidence/local/` setelah pemeriksaan berhasil. Hasil pengujian lokal versi final dicatat secara terpisah dari log GitHub Actions Run #2 agar perkembangan pengujian tetap dapat ditelusuri.
 
 ---
 
@@ -300,14 +313,16 @@ esoria-codefest-uts/
 | [`docs/SUMBER.md`](docs/SUMBER.md) | Penjelasan sumber proyek dan teknologi yang digunakan |
 | [GitHub Actions Run #2](https://github.com/fikriianwarr/esoria-codefest-uts/actions/runs/40434638852) | Bukti tiga job berhasil |
 
-> Panduan teknis pada `docs/` dibuat sejak tahap persiapan proyek. **Status eksekusi terbaru yang didokumentasikan dalam README ini adalah Run #2**, sehingga pernyataan awal di dokumen persiapan tentang deployment yang belum diaktifkan tidak boleh dipakai sebagai status akhir.
+> Panduan teknis pada `docs/` dibuat sejak tahap persiapan proyek. **GitHub Actions Run #2 menjadi bukti keberhasilan pipeline CI/CD end-to-end, sedangkan rekapitulasi pengujian lokal versi final mencatat 94 pengujian lulus setelah pembaruan kode.** Kedua hasil didokumentasikan secara terpisah sesuai tahap pelaksanaannya.
 
 ## Tim Esoria
+
 | Anggota | NIM | Kontribusi |
 | :-- | :-- | :-- |
 | **Fikri Anwar** | `231112145` | Dockerfile, Compose, container, port, dan website |
 | **Muhammad Alfisyahrin** | `231112853` | GitHub Actions, GHCR, self-hosted runner, CI/CD |
 | **Havidz Andrian** | `231111899` | Pengujian, API, SQLite, persistensi, dokumentasi |
+
 ---
 
 <div align="center">
