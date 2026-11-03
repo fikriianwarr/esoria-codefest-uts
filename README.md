@@ -236,9 +236,9 @@ GitHub Actions Run #2 pada 27 Oktober 2026 berhasil menyelesaikan proses CI/CD s
 
 | Job | Hasil pada Run #2 | Durasi job |
 | :-- | :--: | --: |
-| Test application and container — `verify` | **SUCCESS** | 1 menit 13 detik |
-| Publish tested image to GHCR — `publish` | **SUCCESS** | 29 detik |
-| Deploy on group machine — `deploy` | **SUCCESS** | 1 menit 21 detik |
+| Test application and container - `verify` | **SUCCESS** | 1 menit 13 detik |
+| Publish tested image to GHCR - `publish` | **SUCCESS** | 29 detik |
+| Deploy on group machine - `deploy` | **SUCCESS** | 1 menit 21 detik |
 | **Workflow keseluruhan** | **SUCCESS** | **9 menit 48 detik** |
 
 ### Hasil verifikasi container dan deployment
@@ -254,7 +254,7 @@ Selain pengujian otomatis, pemeriksaan terhadap container dan layanan aplikasi j
 
 ### Tautan verifikasi
 
-- [**GitHub Actions — Run #2 (Success)**](https://github.com/fikriianwarr/esoria-codefest-uts/actions/runs/40434638852)
+- [**GitHub Actions - Run #2 (Success)**](https://github.com/fikriianwarr/esoria-codefest-uts/actions/runs/40434638852)
 - [**Workflow CI/CD**](.github/workflows/esoria-ci-cd.yml)
 - [**Commit terverifikasi**](https://github.com/fikriianwarr/esoria-codefest-uts/commit/5fe69f90675504bcfc599efebd9fd5de04e5bc98)
 
