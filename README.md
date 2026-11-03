@@ -193,7 +193,7 @@ Panduan konfigurasi lebih lanjut tersedia pada [`docs/CI_CD.md`](docs/CI_CD.md).
 
 Pengujian aplikasi ESORIA CodeFest dilakukan secara bertahap untuk memastikan seluruh fungsi utama, keamanan, dan proses deployment dapat berjalan sesuai kebutuhan. Proses pengujian dibagi menjadi dua tahap, yaitu pengujian pada versi awal aplikasi dan pengujian lanjutan setelah dilakukan pembaruan serta penyempurnaan kode.
 
-### Tahap 1 – Pengujian versi awal (81 tes)
+### Tahap 1 - Pengujian versi awal (81 tes)
 
 Pada tahap pengujian pertama, aplikasi berhasil menjalankan **81 dari 81 pengujian otomatis tanpa kegagalan**. Pengujian ini mencakup pemeriksaan source code, fungsi aplikasi, autentikasi, pengelolaan data, serta pemeriksaan container.
 
@@ -201,7 +201,7 @@ Hasil tersebut tercatat pada **GitHub Actions Run #2 tanggal 27 Oktober 2026**, 
 
 Pengujian tahap awal menjadi dasar untuk memastikan bahwa aplikasi telah dapat dibangun, diuji, dipublikasikan ke GitHub Container Registry, dan dijalankan melalui container pada mesin deployment.
 
-### Tahap 2 – Pengujian versi final setelah pembaruan kode (94 tes)
+### Tahap 2 - Pengujian versi final setelah pembaruan kode (94 tes)
 
 Setelah pengujian tahap pertama berhasil, kelompok melakukan pembaruan dan penyempurnaan kode aplikasi serta memperluas pemeriksaan pada lingkungan pengujian lokal.
 
@@ -219,8 +219,8 @@ Kedua hasil tersebut didokumentasikan secara terpisah agar perkembangan pengujia
 
 | Tahap pengujian | Jumlah tes | Lulus | Gagal | Keterangan |
 | :-- | :--: | :--: | :--: | :-- |
-| **Tahap 1 – Versi awal** | 81 | 81 | 0 | Pengujian awal yang tercatat pada GitHub Actions Run #2 dan SS 09 |
-| **Tahap 2 – Versi final** | 94 | 94 | 0 | Pengujian lokal setelah pembaruan kode, didokumentasikan pada SS 10 |
+| **Tahap 1 - Versi awal** | 81 | 81 | 0 | Pengujian awal yang tercatat pada GitHub Actions Run #2 dan SS 09 |
+| **Tahap 2 - Versi final** | 94 | 94 | 0 | Pengujian lokal setelah pembaruan kode, didokumentasikan pada SS 10 |
 
 **Hasil pengujian akhir:**
 
