@@ -1,3 +1,4 @@
+
 <div align="center">
   <a href="https://github.com/fikriianwarr/esoria-codefest-uts">
     <img src="app/public/assets/logo_esoria.webp" alt="Logo ESORIA CodeFest" width="100" />
@@ -117,7 +118,7 @@ Pada setup awal, sistem membuat `.env` dengan kata sandi admin acak. Email defau
 | Tahap | Proses | Hasil |
 | :-- | :-- | :-- |
 | **01 · SOURCE** | Commit / pull request pada GitHub | Source masuk ke workflow |
-| **02 · VERIFY** | Pemeriksaan source, 81 automated tests, build dan smoke test Docker | Image yang lulus pengujian |
+| **02 · VERIFY** | Pemeriksaan source, 81 automated tests pada Run #2 (tahap awal), build dan smoke test Docker | Image yang lulus pengujian |
 | **03 · PUBLISH** | Upload image teruji ke GHCR saat CD diaktifkan | Referensi image berbasis digest |
 | **04 · DEPLOY** | Self-hosted runner mengambil image dan menjalankan Docker Compose | Container aplikasi terbaru |
 | **05 · VALIDATE** | Periksa HTTP, database, status sehat, dan SHA rilis | Deployment terverifikasi; kegagalan ditangani skrip pemulihan |
@@ -169,7 +170,7 @@ Autentikasi ke GHCR dalam workflow memakai **`GITHUB_TOKEN` yang disediakan GitH
 
 ## Bukti pengujian
 
-Dokumentasi berikut merujuk pada **GitHub Actions Run #2 tanggal 27 Oktober 2026**, bukan status real-time dari seluruh run berikutnya.
+Dokumentasi berikut merujuk pada **GitHub Actions Run #2 tanggal 27 Oktober 2026**, bukan status real-time dari seluruh run berikutnya. Setelah pengujian awal tersebut, kelompok juga melakukan pengujian lanjutan pada kode aplikasi yang telah diperbarui dan disempurnakan.
 
 | Job | Hasil pada Run #2 | Durasi job |
 | :-- | :--: | --: |
@@ -180,7 +181,8 @@ Dokumentasi berikut merujuk pada **GitHub Actions Run #2 tanggal 27 Oktober 2026
 
 **Hasil tambahan yang sudah terdokumentasi:**
 
-- **81 dari 81 automated tests lulus**, tanpa kegagalan pada pengujian yang dicatat.
+- **94 dari 94 pengujian pada tahap akhir (versi final) lulus**, terdiri atas 85 pengujian Windows natif dan 9 pengujian Linux terisolasi, setelah pembaruan dan penyempurnaan kode aplikasi. Seluruh pengujian pada rekapitulasi akhir tersebut berhasil tanpa kegagalan. Hasil pengujian lokal versi final didokumentasikan pada SS 10 (Lampiran E laporan UTS), bukan pada log GitHub Actions Run #2.
+- **81 dari 81 automated tests pada GitHub Actions Run #2 lulus**, tanpa kegagalan. Angka 81 merupakan hasil tahap awal yang tercatat pada pipeline tanggal 27 Oktober 2026, sedangkan 94 merupakan hasil pengujian lanjutan setelah pembaruan kode.
 - Container `esoria-uts-web-1` berstatus **healthy** setelah deployment.
 - `/api/health` mengembalikan `status: ok` dan `database: ok`.
 - `/api/release` menunjukkan versi `1.0.0` serta commit yang sesuai dengan pipeline.
