@@ -11,10 +11,10 @@
 ### Ubah ide kamu menjadi karya dengan kami.
 
 ### Kelompok Esoria
-
-**Havidz Andrian** (NIM: 231111899) |  
 **Fikri Anwar** (NIM: 231112145) |  
+**Havidz Andrian** (NIM: 231111899) |  
 **Muhammad Alfisyahrin** (NIM: 231112853)
+
 
 **UTS Pengembangan dan Operasi · IF-B Pagi · T.A. 2026/2027**
 
@@ -398,9 +398,8 @@ Kedua hasil tersebut dipisahkan untuk menjaga kesesuaian antara proses pengemban
 | Anggota | NIM | Kontribusi |
 | :-- | :-- | :-- |
 | **Fikri Anwar** | `231112145` | Dockerfile, Compose, container, port, dan website |
-| **Muhammad Alfisyahrin** | `231112853` | GitHub Actions, GHCR, self-hosted runner, CI/CD |
 | **Havidz Andrian** | `231111899` | Pengujian, API, SQLite, persistensi, dokumentasi |
-
+| **Muhammad Alfisyahrin** | `231112853` | GitHub Actions, GHCR, self-hosted runner, CI/CD |
 ---
 
 <div align="center">
